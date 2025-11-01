@@ -3,7 +3,11 @@ from email.mime.multipart import MIMEMultipart
 from modules.sql import CAioMysql
 from modules.mailbox import MailBox
 from random import randint
-import asyncio
+import asyncio,smtplib,os
+from dotenv import load_dotenv
+load_dotenv()
+send_email=os.getenv("gmail")
+app_password=os.getenv("password")
 class Server():
     def __init__(self):
         self.database=CAioMysql()
@@ -18,15 +22,28 @@ class Server():
             return False     
     def login(self,gmail,password):
         asyncio.run(self.check_user(gmail=gmail,password=password))
-    def create_code(self)->int:
-        return randint(100000,999999)
+    def create_code(self)->str:
+        return str(randint(100000,999999))
         
 
 class Register(Server):
     def __init__(self):
         self.mailbox=MailBox()
     def send_mail(self,gmail,option):
-        data=self.mailbox.mailto(option)
+        code=self.create_code()
+        data=self.mailbox.mailto(option,code=code)
+        
+        msg = MIMEMultipart('alternative')
+        msg["Subject"] = "Elysia Bot Login"
+        msg["From"] = send_email
+        
+        msg["To"] = gmail
+        msg.attach(MIMEText(data, "html", "utf-8"))
+
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+                server.login(send_email, app_password)
+                server.send_message(msg)
+    
         
 
         

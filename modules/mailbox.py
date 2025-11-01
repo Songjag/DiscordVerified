@@ -1,7 +1,7 @@
 class MailBox:
     def __init__(self):
         pass
-    def mailto(self,option)->str:
+    def mailto(self,option,code:str)->str:
         file=None
         if option=="register":
             file="mail/register.mailbox"
@@ -11,4 +11,4 @@ class MailBox:
             file="mail/login.mailbox"
         with open(file,'r',encoding="utf-8") as f:
             data=f.read()
-        return data
+        return data.replace('{code}',code)
