@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mã Xác Minh – Elysia Style</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Poppins', 'Segoe UI', sans-serif;
+        background: radial-gradient(circle at top, #fff6ff 0%, #f6d6f7 40%, #e0baf5 80%, #cda6f0 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        position: relative;
+        overflow: hidden;
+        color: #5b2c6f;
+    }
+
+    body::before {
+        content: '';
+        position: absolute;
+        width: 200%;
+        height: 200%;
+        background-image:
+            radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px),
+            radial-gradient(circle, rgba(255,190,255,0.08) 1px, transparent 1px);
+        background-size: 40px 40px, 70px 70px;
+        background-position: 0 0, 35px 35px;
+        animation: drift 40s linear infinite;
+        opacity: 0.8;
+        z-index: 0;
+    }
+
+    @keyframes drift {
+        0% { transform: translate(0,0); }
+        100% { transform: translate(80px,80px); }
+    }
+
+    .container {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(20px);
+        border-radius: 30px;
+        box-shadow: 0 30px 80px rgba(200,100,255,0.2);
+        width: 90%;
+        max-width: 480px; /* nhỏ gọn hơn */
+        padding: 40px 30px;
+        position: relative;
+        z-index: 1;
+        border: 1.5px solid rgba(255,255,255,0.5);
+        text-align: center;
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .logo {
+        width: 90px;
+        height: 90px;
+        margin: 0 auto 20px;
+        position: relative;
+        border-radius: 50%;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(240,130,220,0.4);
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+        animation: pulse 2.8s ease-in-out infinite;
+    }
+
+    .logo::after {
+        content: '';
+        position: absolute;
+        top: -6px;
+        left: -6px;
+        width: 102px;
+        height: 102px;
+        border: 2px solid rgba(240,150,240,0.4);
+        border-radius: 50%;
+        animation: ripple 2.4s ease-out infinite;
+    }
+
+    @keyframes float {
+        0%,100% { transform: translateY(0px); }
+        50% { transform: translateY(-8px); }
+    }
+    @keyframes pulse {
+        0%,100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+    @keyframes ripple {
+        0% { transform: scale(1); opacity: 1; }
+        100% { transform: scale(1.6); opacity: 0; }
+    }
+
+    h1 {
+        color: #c36bd8;
+        font-size: 26px;
+        margin-bottom: 8px;
+        font-weight: 700;
+    }
+    .subtitle {
+        color: #8b6fa9;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .divider {
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #e7a8ff, #c891f6, transparent);
+        margin: 25px 0;
+    }
+
+    .message {
+        color: #6b4a8a;
+        font-size: 15px;
+        margin-bottom: 25px;
+        line-height: 1.6;
+    }
+
+    .code-container {
+        background: linear-gradient(135deg, #f3e0ff 0%, #f9c7f7 100%);
+        border-radius: 20px;
+        padding: 25px;
+        margin: 25px 0;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(180,100,255,0.2);
+    }
+
+    .code-label {
+        color: #7a5fa8;
+        font-size: 13px;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+    .verification-code {
+        background: white;
+        color: #c36bd8;
+        font-size: 36px;
+        font-weight: 900;
+        letter-spacing: 10px;
+        padding: 16px;
+        border-radius: 12px;
+        margin: 0 auto;
+        display: inline-block;
+        box-shadow: 0 8px 25px rgba(180,80,255,0.25);
+        font-family: 'Courier New', monospace;
+        user-select: all;
+    }
+
+    .timer {
+        color: #8b6fa9;
+        font-size: 13px;
+        margin-top: 10px;
+    }
+
+    .info-box {
+        background: rgba(255,255,255,0.4);
+        border-left: 4px solid #d291ff;
+        padding: 15px;
+        border-radius: 12px;
+        margin: 25px 0;
+        text-align: left;
+        backdrop-filter: blur(8px);
+    }
+    .info-box p {
+        color: #5c3c7f;
+        font-size: 13px;
+        line-height: 1.6;
+        margin-bottom: 8px;
+    }
+    .info-box strong {
+        color: #b865d4;
+    }
+
+    .elysia-footer {
+        text-align: center;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255,255,255,0.5);
+    }
+    .elysia-footer p {
+        color: #7c639a;
+        font-size: 12.5px;
+        line-height: 1.6;
+        margin: 4px 0;
+    }
+    .elysia-footer small {
+        display: block;
+        margin-top: 6px;
+        color: #b574e8;
+        font-size: 11.5px;
+        letter-spacing: 0.5px;
+    }
+    .elysia-footer strong {
+        color: #c36bd8;
+    }
+
+    /* sparkles */
+    .sparkle {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        background: white;
+        border-radius: 50%;
+        box-shadow: 0 0 10px rgba(255,180,255,0.8);
+        animation: sparkle 2.5s ease-in-out infinite;
+    }
+    .sparkle:nth-child(1) { top: 15%; left: 12%; animation-delay: 0s; }
+    .sparkle:nth-child(2) { top: 65%; left: 88%; animation-delay: 0.6s; }
+    .sparkle:nth-child(3) { top: 78%; left: 22%; animation-delay: 1.2s; }
+    .sparkle:nth-child(4) { top: 42%; right: 18%; animation-delay: 1.8s; }
+
+    @keyframes sparkle {
+        0%,100% { opacity: 0; transform: scale(0); }
+        50% { opacity: 1; transform: scale(1); }
+    }
+</style>
+</head>
+<body>
+<div class="sparkle"></div>
+<div class="sparkle"></div>
+<div class="sparkle"></div>
+<div class="sparkle"></div>
+
+<div class="container">
+    <div class="header">
+        <div class="logo">
+            <img src="elysia_logo.png" alt="Elysia Logo">
+        </div>
+        <h1>Mã Xác Minh</h1>
+        <p class="subtitle">Đăng nhập♡</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <p class="message">Đây là mã xác thực của bạn</p>
+
+    <div class="code-container">
+        <div class="code-label">Mã xác thực</div>
+        <div class="verification-code">{code}</div>
+        <div class="timer">⏰ Mã có hiệu lực trong 3:00</div>
+    </div>
+
+    <div class="info-box">
+        <p><strong>📌 Lưu ý quan trọng:</strong></p>
+        <p>• Mã xác minh này chỉ sử dụng được một lần duy nhất</p>
+        <p>• Không chia sẻ mã này với bất kỳ ai</p>
+        <p>• Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email</p>
+        <p>• Mã sẽ hết hạn sau 3 phút kể từ khi nhận được</p>
+    </div>
+
+    <footer class="elysia-footer">
+        <p>© 2025 <span class="elysia">Elysia Realm</span>. All rights reserved.</p>
+        <p>Made with 💜 by <strong>{username}</strong></p>
+        <small>Copyright © 2025 by <strong>{username}</strong></small>
+    </footer>
+</div>
+
+<script>
+let timeLeft = 180;
+const timerElement = document.querySelector('.timer');
+function updateTimer() {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    timerElement.textContent = `⏰ Mã có hiệu lực trong ${minutes}:${seconds.toString().padStart(2,'0')}`;
+    if (timeLeft > 0) timeLeft--;
+    else {
+        timerElement.textContent = '⚠️ Mã đã hết hạn';
+        timerElement.style.color = '#ff4d4d';
+    }
+}
+setInterval(updateTimer, 1000);
+</script>
+</body>
+</html>
