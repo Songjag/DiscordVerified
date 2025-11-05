@@ -1,149 +1,270 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elysia Realm – Profile</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #305a7a, #e6e8fa);
-            color: #1c1c1c;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='icon.jpg') }}">
+<title>Elysia Realm – Profile</title>
 
-        header {
-            background: rgba(230, 232, 250, 0.85);
-            backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
+<style>
+/* 🌟 Toàn trang */
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #305a7a, #e6e8fa);
+    color: #1c1c1c;
+    cursor: url("{{ url_for('static', filename='cursor/vitaclick.png') }}") 16 16, auto;
+    transition: background 0.3s ease;
+}
 
-        .menu-btn {
-            font-size: 24px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #305a7a;
-            transition: 0.2s;
-        }
+/* Header */
+header {
+    background: rgba(230, 232, 250, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
 
-        .menu-btn:hover { transform: scale(1.1); }
+.menu-btn {
+    font-size: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #305a7a;
+    transition: 0.2s;
+}
+.menu-btn:hover { transform: scale(1.1); }
 
-        .title {
-            font-weight: 600;
-            font-size: 22px;
-            color: #305a7a;
-            text-shadow: 0 0 5px rgba(48,90,122,0.3);
-        }
+.title {
+    font-weight: 600;
+    font-size: 22px;
+    color: #305a7a;
+    text-shadow: 0 0 5px rgba(48,90,122,0.3);
+}
 
-        .avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            border: 2px solid #305a7a;
-            transition: 0.2s;
-        }
+.avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 2px solid #305a7a;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.avatar:hover { transform: rotate(10deg) scale(1.05); }
 
-        .avatar:hover {
-            transform: rotate(10deg) scale(1.05);
-        }
+/* Dropdown (Logout menu) */
+.dropdown {
+    position: absolute;
+    top: 70px;
+    right: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    display: none;
+    overflow: hidden;
+    animation: fadeIn 0.3s ease;
+}
+.dropdown.active { display: block; }
+.dropdown a {
+    display: block;
+    padding: 10px 20px;
+    color: #305a7a;
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.2s;
+}
+.dropdown a:hover {
+    background: linear-gradient(135deg, #305a7a, #5e8fb9);
+    color: white;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: -250px;
-            height: 100%;
-            width: 220px;
-            background: rgba(48, 90, 122, 0.95);
-            color: white;
-            padding: 60px 15px;
-            transition: 0.3s ease;
-            box-shadow: 2px 0 8px rgba(0,0,0,0.2);
-            z-index: 9;
-        }
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -260px;
+    height: 100%;
+    width: 240px;
+    background: linear-gradient(160deg, #27496d, #305a7a, #3f72af);
+    color: white;
+    padding: 60px 20px;
+    transition: 0.4s ease;
+    box-shadow: 4px 0 15px rgba(0,0,0,0.3);
+    z-index: 9;
+}
+.sidebar.active { left: 0; }
+.sidebar h3 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 600;
+    font-size: 20px;
+    letter-spacing: 1px;
+    color: #e6e8fa;
+}
+.sidebar a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #e6e8fa;
+    font-size: 16px;
+    margin: 12px 0;
+    padding: 10px 15px;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+.sidebar a:hover {
+    background: linear-gradient(135deg, #5e8fb9, #89c2d9);
+    color: #fff;
+    box-shadow: 0 0 12px rgba(255,255,255,0.2);
+    transform: translateX(4px);
+}
+.sidebar a i {
+    width: 20px;
+    text-align: center;
+}
 
-        .sidebar.active { left: 0; }
-        .sidebar a {
-            display: block;
-            text-decoration: none;
-            color: #e6e8fa;
-            font-size: 16px;
-            margin: 12px 0;
-            transition: 0.2s;
-        }
+/* Profile Container */
+.container {
+    margin-top: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+}
 
-        .sidebar a:hover {
-            color: #ffffff;
-            text-shadow: 0 0 10px #e6e8fa;
-        }
+/* Profile Card - dạng ngang cho PC, dọc cho mobile */
+.profile-card {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    background: rgba(255,255,255,0.85);
+    padding: 30px 40px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    transition: 0.3s;
+    cursor: url("{{ url_for('static', filename='cursor/vitaclick.png') }}") 16 16, pointer;
+    max-width: 600px;
+}
+.profile-card:hover {
+    transform: translateY(-5px);
+}
 
-        .container {
-            margin-top: 60px;
-            text-align: center;
-        }
+.profile-card img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid #305a7a;
+}
 
-        .profile-card {
-            display: inline-block;
-            background: rgba(255,255,255,0.8);
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-            max-width: 400px;
-            transition: 0.3s;
-        }
+.profile-info {
+    text-align: left;
+}
+.profile-info h2 {
+    color: #305a7a;
+    margin: 0 0 5px;
+    font-size: 22px;
+}
+.profile-info p {
+    color: #4b4b4b;
+    font-size: 15px;
+}
 
-        .profile-card:hover { transform: translateY(-5px); }
+/* Responsive (mobile) */
+@media (max-width: 700px) {
+    .profile-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 25px;
+    }
+    .profile-info {
+        text-align: center;
+    }
+}
 
-        .profile-card img {
-            width: 100px;
-            border-radius: 50%;
-            border: 3px solid #305a7a;
-        }
-
-        .profile-card h2 {
-            color: #305a7a;
-            margin: 15px 0 5px;
-        }
-
-        .profile-card p {
-            color: #4b4b4b;
-            font-size: 14px;
-        }
-    </style>
+/* Cursor variations */
+body, a, button {
+    cursor: url("{{ url_for('static', filename='cursor/vitaclick.png') }}") 16 16, pointer;
+}
+.clickable {
+    cursor: url("{{ url_for('static', filename='cursor/typing.png') }}") 16 16, text;
+}
+.disabled, [disabled], .not-allowed {
+    cursor: url("{{ url_for('static', filename='cursor/vita2.png') }}") 16 16, not-allowed;
+}
+</style>
+<script src="https://kit.fontawesome.com/a2e0a6e6f5.js" crossorigin="anonymous"></script>
 </head>
-<body>
 
+<body>
     <div class="sidebar" id="sidebar">
-        <a href="#">Elysia Docs</a>
-        <a href="#">Embed Create</a>
-        <a href="#">Manage Bot</a>
+        <h3>Elysia Menu</h3>
+        <a href="#"><i class="fas fa-book"></i>Elysia Docs</a>
+        <a href="#"><i class="fas fa-paint-brush"></i>Embed Create</a>
+        <a href="#"><i class="fas fa-cogs"></i>Manage Bot</a>
+        <a href="#"><i class="fas fa-server"></i>Server Settings</a>
     </div>
 
     <header>
         <button class="menu-btn" onclick="toggleMenu()">☰</button>
         <div class="title">VitaxElysia Bot</div>
-        <img src="{{ user.avatar_url }}" alt="Avatar" class="avatar">
+        <img src="{{ user.avatar_url }}" alt="Avatar" class="avatar" onclick="toggleDropdown()">
     </header>
+
+    <div class="dropdown" id="dropdown">
+        <a href="/logout">Logout</a>
+    </div>
 
     <div class="container">
         <div class="profile-card">
             <img src="{{ user.avatar_url }}" alt="Avatar">
-            <h2>{{ user.username }}</h2>
-            <p>{{ user.email }}</p>
+            <div class="profile-info">
+                <h2>{{ user.username }}</h2>
+                <p>{{ user.email }}</p>
+            </div>
         </div>
     </div>
 
-    <script>
-        function toggleMenu() {
-            document.getElementById('sidebar').classList.toggle('active');
-        }
-    </script>
+<script>
+const sidebar = document.getElementById('sidebar');
+const dropdown = document.getElementById('dropdown');
+const avatar = document.querySelector('.avatar');
+
+function toggleMenu() {
+    sidebar.classList.toggle('active');
+}
+function toggleDropdown() {
+    dropdown.classList.toggle('active');
+}
+window.addEventListener('click', function(e) {
+    if (!dropdown.contains(e.target) && !avatar.contains(e.target)) {
+        dropdown.classList.remove('active');
+    }
+});
+
+// ⏳ Sidebar tự ẩn nếu không hoạt động
+let sidebarTimer;
+function resetSidebarTimer() {
+    clearTimeout(sidebarTimer);
+    sidebarTimer = setTimeout(() => {
+        sidebar.classList.remove('active');
+    }, 5000);
+}
+sidebar.addEventListener('mousemove', resetSidebarTimer);
+sidebar.addEventListener('click', resetSidebarTimer);
+document.body.addEventListener('mousemove', e => {
+    if (e.clientX < 50) sidebar.classList.add('active');
+});
+</script>
 </body>
 </html>

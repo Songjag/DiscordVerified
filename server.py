@@ -100,11 +100,19 @@ def profile():
     user_data = {
         "username": user["username"],
         "email": user.get("email", "Không có email"),
-        "avatar_url": avatar_url
+        "avatar_url": avatar_url,
+        "mouseclick":"/static/cursor/vitaclick.png"
     }
 
     return render_template("profile.html", user=user_data)
-
+@app.route('/login-mock')
+def login_mock():
+    session['user'] = {
+        'username': 'Maria',
+        'email': 'dev@example.com',
+        'avatar_url': "a_e4b2177712d93e08aa25d14b8e0deb50"
+    }
+    return redirect(url_for('profile'))
 @app.route("/logout")
 def logout():
     session.pop("user", None)
@@ -114,4 +122,4 @@ def run_bot():
 
 if __name__ == "__main__":
     threading.Thread(target=run_bot, daemon=True).start()
-    app.run(debug=True)
+    app.run(debug=True,host='0.0.0.0')
