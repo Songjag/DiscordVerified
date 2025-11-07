@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elysia Realm – Command Docs</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #305a7a, #e6e8fa);
+  color: #1c1c1c;
+  overflow-x: hidden;
+  cursor: url("/static/cursor/vitanormal.png") 16 16, pointer;
+}
+
+/* Header */
+header {
+  background: rgba(230, 232, 250, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.menu-btn {
+    font-size: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #305a7a;
+    transition: 0.2s;
+}
+.menu-btn:hover { transform: scale(1.1); }
+
+.title {
+  font-weight: 600;
+  font-size: 22px;
+  color: #305a7a;
+  text-shadow: 0 0 5px rgba(48,90,122,0.3);
+}
+.avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 2px solid #305a7a;
+    cursor: pointer;
+    transition: 0.3s;
+    cursor: url("/static/cursor/vitahover.png") 16 16, pointer;
+}
+.avatar:hover { transform: rotate(10deg) scale(1.05);cursor: url("/static/cursor/vitahover.png") 16 16, pointer; }
+
+.dropdown { position: absolute; top: 70px; right: 20px; background: white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); display: none; overflow: hidden; animation: fadeIn 0.3s ease; } .dropdown.active { display: block; } .dropdown a { display: block; padding: 10px 20px; color: #305a7a; text-decoration: none; font-weight: 500; transition: 0.2s; } .dropdown a:hover { background: linear-gradient(135deg, #305a7a, #5e8fb9); color: white; } @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -260px;
+    height: 100%;
+    width: 240px;
+    background: linear-gradient(160deg, #27496d, #305a7a, #3f72af);
+    color: white;
+    padding: 60px 20px;
+    transition: 0.4s ease;
+    box-shadow: 4px 0 15px rgba(0,0,0,0.3);
+    z-index: 9;
+}
+.sidebar.active { left: 0; }
+.sidebar h3 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 600;
+    font-size: 20px;
+    letter-spacing: 1px;
+    color: #e6e8fa;
+}
+.sidebar a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #e6e8fa;
+    font-size: 16px;
+    margin: 12px 0;
+    padding: 10px 15px;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+.sidebar a:hover {
+    background: linear-gradient(135deg, #5e8fb9, #89c2d9);
+    color: #fff;
+    box-shadow: 0 0 12px rgba(255,255,255,0.2);
+    transform: translateX(4px);
+}
+.sidebar a i {
+    width: 20px;
+    text-align: center;
+}
+
+
+/* Content */
+.container {
+  margin: 30px auto;
+  width: 85%;
+  max-width: 1200px;
+  background: rgba(255,255,255,0.85);
+  border-radius: 20px;
+  padding: 25px 40px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+h1 {
+  text-align: center;
+  color: #305a7a;
+  font-size: 26px;
+  margin-bottom: 20px;
+}
+
+.search-box {
+  text-align: center;
+  margin-bottom: 25px;
+}
+.search-box input {
+  width: 90%;
+  max-width: 500px;
+  padding: 12px 18px;
+  border-radius: 25px;
+  border: 2px solid #305a7a;
+  outline: none;
+  font-size: 15px;
+  transition: 0.3s;
+}
+.search-box input:focus {
+  box-shadow: 0 0 10px rgba(48,90,122,0.3);
+}
+
+.command-group {
+  margin-bottom: 30px;
+}
+.command-group h2 {
+  color: #4a3fa7;
+  font-size: 20px;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #305a7a;
+  padding-bottom: 5px;
+}
+
+.command-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.command {
+  background: #f6f6ff;
+  padding: 10px 15px;
+  border-radius: 10px;
+  flex: 1 1 calc(33% - 10px);
+  min-width: 230px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: 0.2s;
+}
+.command:hover {
+  background: #e6e8fa;
+  transform: translateY(-3px);
+}
+.command strong { color: #305a7a; }
+.command p { font-size: 13px; margin: 5px 0 0; color: #333; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .command { flex: 1 1 100%; }
+}
+</style>
+</head>
+
+<body>
+  <div class="sidebar" id="sidebar">
+  <h3>Elysia Menu</h3>
+  <a href="{{ url_for('profile') }}"><i class="fas fa-home"></i> Trang chủ</a>
+  <a href="{{ url_for('help') }}"><i class="fas fa-book"></i> Elysia Docs</a>
+  <a href="#"><i class="fas fa-cogs"></i> Manage Bot</a>
+</div>
+
+
+  <header>
+    <button class="menu-btn" onclick="toggleMenu()">☰</button>
+    <div class="title">VitaxElysia Bot</div>
+    <img src="{{ user.avatar_url }}" alt="Avatar" class="avatar">
+  </header>
+  <div class="dropdown" id="dropdown">
+        <a href="/logout">Logout</a>
+    </div>
+  <div class="container">
+    <h1>📖 Danh sách lệnh Elysia</h1>
+    
+
+    <div id="command-container">
+      <div class="command-group">
+        <h2>🛡️ Quản lý & Bảo mật</h2>
+        <div class="command-list">
+          <div class="command"><strong>/antilink</strong><p>Antilink</p></div>
+          <div class="command"><strong>/antilink turn</strong><p>Bật chế độ antilink</p></div>
+          <div class="command"><strong>/antilink status</strong><p>Hiển thị trạng thái antilink</p></div>
+          <div class="command"><strong>/antilink exception</strong><p>Ngoại lệ</p></div>
+          <div class="command"><strong>/antilink remove</strong><p>Gỡ khỏi cơ sở dữ liệu</p></div>
+          <div class="command"><strong>/ban</strong><p>Ban người dùng</p></div>
+          <div class="command"><strong>/kick</strong><p>Kick người dùng</p></div>
+          <div class="command"><strong>/timeout</strong><p>Timeout người dùng</p></div>
+          <div class="command"><strong>/untimeout</strong><p>Gỡ timeout</p></div>
+          <div class="command"><strong>/unban</strong><p>Gỡ ban</p></div>
+        </div>
+      </div>
+      <div class="command-group">
+        <h2>⚙ Các lệnh tự động</h2>
+          <div class="command"><strong>/auto remove</strong><p>Tự động xóa các tin nhắn đã cài</p></div>
+          <div class="command"><strong>/auto role</strong><p>Tự động thêm vai trò khi thành viên vừa vào</p></div>
+          <div class="command"><strong>/auto response</strong><p>Tự động phản hồi tin nhắn</p></div>
+          
+        <div class="command-list">
+      </div>
+      <div class="command-group">
+        <h2>💬 Kênh & Tin nhắn</h2>
+        <div class="command-list">
+          <div class="command"><strong>/channel</strong><p>Quản trị kênh</p></div>
+          <div class="command"><strong>/purge</strong><p>Xóa tin nhắn</p></div>
+          <div class="command"><strong>/nuke</strong><p>Xóa và tạo lại kênh</p></div>
+          <div class="command"><strong>/poll</strong><p>Tạo bình chọn</p></div>
+          <div class="command"><strong>/stickey</strong><p>Tin nhắn cố định</p></div>
+          <div class="command"><strong>/chat</strong><p>Chat với bot</p></div>
+        </div>
+      </div>
+
+      <div class="command-group">
+        <h2>🎭 Role & Thành viên</h2>
+        <div class="command-list">
+          <div class="command"><strong>/role</strong><p>Quản lý vai trò</p></div>
+          <div class="command"><strong>/auto role</strong><p>Tự động cấp vai trò</p></div>
+          <div class="command"><strong>/reaction_role</strong><p>Thiết lập role qua emoji</p></div>
+          <div class="command"><strong>/nick</strong><p>Đổi nickname</p></div>
+          <div class="command"><strong>/user</strong><p>Lệnh người dùng</p></div>
+        </div>
+      </div>
+
+      <div class="command-group">
+        <h2>⚙️ Tiện ích</h2>
+        <div class="command-list">
+          <div class="command"><strong>/remind</strong><p>Đặt lời nhắc</p></div>
+          <div class="command"><strong>/translate</strong><p>Dịch văn bản</p></div>
+          <div class="command"><strong>/todo</strong><p>Quản lý việc cần làm</p></div>
+          <div class="command"><strong>/reportbug</strong><p>Báo lỗi cho dev</p></div>
+          <div class="command"><strong>/ping</strong><p>Kiểm tra tốc độ phản hồi</p></div>
+          <div class="command"><strong>/help</strong><p>Danh sách hướng dẫn</p></div>
+        </div>
+      </div>
+
+      <div class="command-group">
+        <h2>👑 Elysia System</h2>
+        <div class="command-list">
+          <div class="command"><strong>/elysia info</strong><p>Thông tin hệ thống</p></div>
+          <div class="command"><strong>/elysia list</strong><p>Danh sách người bị ban</p></div>
+          <div class="command"><strong>/elysia channel</strong><p>Kênh thông báo</p></div>
+          <div class="command"><strong>/elysia ban</strong><p>Cấm người dùng khỏi Elysia</p></div>
+          <div class="command"><strong>/elysia unban</strong><p>Gỡ cấm người dùng</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<script>
+const sidebar = document.getElementById('sidebar');
+const dropdown = document.getElementById('dropdown');
+const avatar = document.querySelector('.avatar');
+
+function toggleMenu() { sidebar.classList.toggle('active'); }
+
+avatar.addEventListener("click", function(e) {
+    e.stopPropagation(); 
+    dropdown.classList.toggle("active");
+});
+
+window.addEventListener("click", function(e) {
+    if (!dropdown.contains(e.target)) {
+        dropdown.classList.remove("active");
+    }
+});
+
+
+let sidebarTimer;
+function resetSidebarTimer() {
+    clearTimeout(sidebarTimer);
+    sidebarTimer = setTimeout(() => {
+        sidebar.classList.remove('active');
+    }, 2000);
+}
+sidebar.addEventListener('mousemove', resetSidebarTimer);
+sidebar.addEventListener('click', resetSidebarTimer);
+document.body.addEventListener('mousemove', e => {
+    if (e.clientX < 50) sidebar.classList.add('active');
+document.addEventListener("mousedown", function() {
+document.body.style.cursor = "url('{{ url_for('static', filename='cursor/vitaclick.png') }}') 16 16, pointer";
+});
+
+document.addEventListener("mouseup", function() {
+  document.body.style.cursor = "url('{{ url_for('static', filename='cursor/vitanormal.png') }}') 16 16, pointer";
+});
+});
+
+</script>
+
+</body>
+</html>

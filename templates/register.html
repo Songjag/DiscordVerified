@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Elysia Realm – Vita Welcome</title>
-<link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='icon.jpg') }}">
+<link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='vitanormal.png') }}">
 
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
@@ -21,9 +21,8 @@
     justify-content: center;
     overflow: hidden;
     position: relative;
+    cursor: url('{{ url_for("static", filename="cursor/vitanormal.png") }}'), auto;
   }
-
-  /* Hiệu ứng hạt sáng nhẹ */
   body::before {
     content: '';
     position: absolute;
@@ -66,8 +65,6 @@
     color: rgba(255,255,255,0.85);
     margin-bottom: 35px;
   }
-
-  /* Nút Discord */
   .btn-discord {
     display: inline-flex;
     align-items: center;
@@ -142,12 +139,13 @@
     font-size: 12px;
     color: rgba(255,255,255,0.5);
   }
+  
 </style>
 </head>
 <body>
   <div class="container">
     <h1>Welcome to Elysia Realm</h1>
-    <p>🌸Xin chào, mình là <b>{{ user }}</b>.Hãy xác minh tài khoản của bạn vào bot Elysia nhé.<br>
+    <p>Xin chào, mình là <b>{{ user }}</b>.Hãy xác minh tài khoản của bạn vào bot Elysia nhé.<br>
 Chúc bạn 1 ngày vui vẻ</p>
 
     <a href="/login" class="btn-discord">
