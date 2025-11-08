@@ -74,18 +74,79 @@ def callback():
 
     if "access_token" not in token_json:
         return jsonify({"error": "Không thể lấy token", "details": token_json})
-
     access_token = token_json["access_token"]
     user_response = requests.get(
         f"{DISCORD_API_BASE}/users/@me",
         headers={"Authorization": f"Bearer {access_token}"}
     )
     user_json = user_response.json()
+    print(user_json)
     session["user"] = user_json
+    display_name = user_json.get("global_name") 
+    user_data = {
+    "id": user_json.get("id"),
+    "username": display_name,  
+    "email": user_json.get("email"),
+    "verified": user_json.get("verified"),
+    "avatar": user_json.get("avatar"),
+    }
+    save_path = "login_complete.json"
+    try:
+        if os.path.exists(save_path):
+            with open(save_path, "r", encoding="utf-8") as f:
+                existing = json.load(f)
+        else:
+            existing = []
+        if not any(u["id"] == user_data["id"] for u in existing):
+            existing.append(user_data)
 
+        with open(save_path, "w", encoding="utf-8") as f:
+            json.dump(existing, f, ensure_ascii=False, indent=4)
+
+    except Exception as e:
+        print("❌ Lỗi khi lưu login_complete.json:", e)
     return redirect(url_for("profile"))
 @app.route("/profile")
 def profile():
+    user = session.get("user")
+    if not user:
+        return redirect(url_for("home"))
+    avatar_url = "/static/default.png"
+    if "avatar_url" in user and isinstance(user["avatar_url"], str) and user["avatar_url"].startswith("http"):
+        avatar_url = user["avatar_url"]
+
+    # Nếu user có id và avatar (chuẩn Discord)
+    elif user.get("id") and user.get("avatar"):
+        avatar = user["avatar"]
+        if avatar.startswith("a_"):
+            avatar_url = f"https://cdn.discordapp.com/avatars/{user['id']}/{avatar}.gif?size=1024"
+        else:
+            avatar_url = f"https://cdn.discordapp.com/avatars/{user['id']}/{avatar}.png?size=1024"
+
+    # (phần dưới giữ nguyên)
+    owner_id = 1002018505601863730
+    future = asyncio.run_coroutine_threadsafe(get_profile(owner_id), bot.loop)
+    try:
+        avatar_url2, username = future.result(timeout=10)
+    except Exception:
+        avatar_url2, username = "/static/default.png", "Unknown"
+
+    user_data = {
+        "username": user.get("global_name", "Ẩn danh"),
+        "email": user.get("email", "Không có email"),
+        "avatar_url": avatar_url,
+        "mouseclick": "/static/cursor/vitaclick.png",
+        "devavatar": avatar_url2,
+        "dev": username,
+    }
+
+    data_path = os.path.join(app.static_folder, "notices", "notices.json")
+    with open(data_path, "r", encoding="utf-8") as f:
+        notices = json.load(f)
+
+    return render_template("profile.html", user=user_data, devavatar=avatar_url2, dev=username, notices=notices,linktouser=f"https://discord.com/users/{user.get("id")}")
+@app.route('/help')
+def help():
     user = session.get("user")
     if not user:
         return redirect(url_for("home"))
@@ -96,15 +157,61 @@ def profile():
         avatar_url = f"https://cdn.discordapp.com/avatars/{user['id']}/{avatar}.png?size=1024"
     else:
         avatar_url = "/static/default.png"
-
+    owner_id = 1002018505601863730
+    future = asyncio.run_coroutine_threadsafe(get_profile(owner_id), bot.loop)
+    try:
+        avatar_url2, username = future.result(timeout=10)
+    except Exception:
+        avatar_url2, username = "/static/default.png", "Unknown"
     user_data = {
         "username": user["username"],
         "email": user.get("email", "Không có email"),
         "avatar_url": avatar_url,
-        "mouseclick":"/static/cursor/vitaclick.png"
+        "mouseclick": "/static/cursor/vitaclick.png",
+        "devavatar": avatar_url2,
+        "dev": username,
     }
 
-    return render_template("profile.html", user=user_data)
+    return render_template("documents.html", user=user_data)
+@app.route("/user")
+def user():
+    user = session.get("user")
+    if not user:
+        return redirect(url_for("home"))
+    avatar = user.get("avatar")
+    if avatar and avatar.startswith("a_"):
+        avatar_url = f"https://cdn.discordapp.com/avatars/{user['id']}/{avatar}.gif?size=1024"
+    elif avatar:
+        avatar_url = f"https://cdn.discordapp.com/avatars/{user['id']}/{avatar}.png?size=1024"
+    else:
+        avatar_url = "/static/default.png"
+    owner_id = 1002018505601863730
+    future = asyncio.run_coroutine_threadsafe(get_profile(owner_id), bot.loop)
+    try:
+        avatar_url2, username = future.result(timeout=10)
+    except Exception:
+        avatar_url2, username = "/static/default.png", "Unknown"
+    user_data = {
+        "username": user["username"],
+        "email": user.get("email", "Không có email"),
+        "avatar_url": avatar_url,
+        "mouseclick": "/static/cursor/vitaclick.png",
+        "devavatar": avatar_url2,
+        "dev": username,
+        "global_name":user.get("global_name"),
+        "id": user.get("id"),
+        "locale": user.get("locale"),
+        "email_verify": "Đã xác minh" if user.get("verified")==True else "Chưa xác minh"  , 
+        "premium_type": (
+    "Nitro Boost" if user.get("premium_type") == 2
+    else "Nitro Basic" if user.get("premium_type") == 1
+    else "Không có Nitro"
+),
+
+        "mfa_enabled":"Đã xác minh" if user.get("mfa_enabled")==True else "Chưa xác minh" ,
+
+    }
+    return render_template("user.html",user=user_data)
 @app.route('/login-mock')
 def login_mock():
     session['user'] = {
@@ -119,7 +226,6 @@ def logout():
     return redirect(url_for("home"))
 def run_bot():
     asyncio.run(bot.start(TOKEN))
-
 if __name__ == "__main__":
     threading.Thread(target=run_bot, daemon=True).start()
     app.run(debug=True,host='0.0.0.0')

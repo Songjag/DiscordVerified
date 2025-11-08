@@ -322,12 +322,15 @@ a:hover, button:hover, .clickable:hover {
     </header>
 
     <div class="dropdown" id="dropdown">
+        <a href="/user">My Profile</a>
         <a href="/logout">Logout</a>
     </div>
 
     <div class="container">
         <div class="profile-card">
+            <a href="{{ linktouser }}">
             <img src="{{ user.avatar_url }}" alt="Avatar">
+            </a>
             <div class="profile-info">
                 <h2>{{ user.username }}</h2>
                 <p>{{ user.email }}</p>
