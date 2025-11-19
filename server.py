@@ -1,5 +1,5 @@
 from flask import Flask, redirect, request, jsonify, session, url_for, render_template
-import requests
+import requests,psutil
 import os
 import threading
 import asyncio,json
@@ -32,7 +32,15 @@ async def get_profile(user_id):
     except Exception as e:
         print("Lỗi khi lấy user:", e)
         return "/static/default.png", "Unknown"
-
+async def get_info_bot():
+    name=bot.user.display_name
+    server=len(bot.guilds)
+    channels = sum(len(g.channels) for g in bot.guilds)
+    users = sum((g.member_count or 0) for g in bot.guilds)
+    latency = round(bot.latency * 1000)
+    memory_usage = psutil.Process().memory_info().rss / 1024**2
+    member_install = (bot.application.approximate_user_install_count)
+    return name,server,channels,users,latency,memory_usage,member_install
 @app.route("/")
 def home():
     owner_id = 1002018505601863730
@@ -88,7 +96,8 @@ def callback():
     "username": display_name,  
     "email": user_json.get("email"),
     "verified": user_json.get("verified"),
-    "avatar": user_json.get("avatar"),
+    "avatar": user_json.get("avatar"),      
+    "token":access_token
     }
     save_path = "login_complete.json"
     try:
@@ -114,16 +123,12 @@ def profile():
     avatar_url = "/static/default.png"
     if "avatar_url" in user and isinstance(user["avatar_url"], str) and user["avatar_url"].startswith("http"):
         avatar_url = user["avatar_url"]
-
-    # Nếu user có id và avatar (chuẩn Discord)
     elif user.get("id") and user.get("avatar"):
         avatar = user["avatar"]
         if avatar.startswith("a_"):
             avatar_url = f"https://cdn.discordapp.com/avatars/{user['id']}/{avatar}.gif?size=1024"
         else:
             avatar_url = f"https://cdn.discordapp.com/avatars/{user['id']}/{avatar}.png?size=1024"
-
-    # (phần dưới giữ nguyên)
     owner_id = 1002018505601863730
     future = asyncio.run_coroutine_threadsafe(get_profile(owner_id), bot.loop)
     try:
@@ -212,11 +217,69 @@ def user():
 
     }
     return render_template("user.html",user=user_data)
+@app.route('/bot_info')
+def bot_info():
+    user = session.get("user")
+    if not user:
+        return redirect(url_for("home"))  
+    
+    avatar = user.get("avatar")
+    if avatar and avatar.startswith("a_"):
+        avatar_url = f"https://cdn.discordapp.com/avatars/{user['id']}/{avatar}.gif?size=1024"
+    elif avatar:
+        avatar_url = f"https://cdn.discordapp.com/avatars/{user['id']}/{avatar}.png?size=1024"
+    else:
+        avatar_url = "/static/default.png"
+
+    user_data = {
+        "username": user.get("global_name", "Ẩn danh"),
+        "email": user.get("email", "Không có email"),
+        "avatar_url": avatar_url,
+        "mouseclick": "/static/cursor/vitaclick.png",
+    }
+
+    future = asyncio.run_coroutine_threadsafe(get_info_bot(), bot.loop)
+    try:
+        name, server, channels, users, latency, memory_usage, member_install = future.result(timeout=10)
+    except Exception as e:
+        print("Lỗi khi lấy thông tin bot:", e)
+        name, server, channels, users, latency, memory_usage, member_install = (
+            "Unknown", 0, 0, 0, 0, 0, 0
+        )
+
+    avatar_url = bot.user.display_avatar.url if bot.user else "/static/default.png"
+    cpu = psutil.cpu_percent()
+    ram = psutil.virtual_memory().percent
+    net = psutil.net_io_counters()
+    net_sent = round(net.bytes_sent / (1024 * 1024), 2)
+    net_recv = round(net.bytes_recv / (1024 * 1024), 2)
+
+    stats = {
+        "cpu": cpu,
+        "ram": ram,
+        "net_sent": net_sent,
+        "net_recv": net_recv,
+    }
+
+    bot_info = {
+        "name": name,
+        "server": server,
+        "channels": channels,
+        "users": users,
+        "latency": latency,
+        "memory_usage": round(memory_usage, 2),
+        "member_install": member_install,
+        "avatar_url": avatar_url,
+    }
+
+    return render_template("bot.html", user=user_data, bot=bot_info, stats=stats)
+
+
 @app.route('/login-mock')
 def login_mock():
     session['user'] = {
         'username': 'Maria',
-        'email': 'dev@example.com',
+        'email': 'maria@vita.com',
         'avatar_url': "a_e4b2177712d93e08aa25d14b8e0deb50"
     }
     return redirect(url_for('profile'))
